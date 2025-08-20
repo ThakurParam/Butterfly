@@ -1,103 +1,162 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { motion } from "framer-motion";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const imageRef = useRef<HTMLImageElement | null>(null);
+  const headingRef = useRef<HTMLHeadingElement | null>(null);
+  const subheadingRef = useRef<HTMLParagraphElement | null>(null);
+  const ctaRef = useRef<HTMLAnchorElement | null>(null);
+  const [imageSrc, setImageSrc] = useState(
+    // Use local asset from public/
+    "/photo-1599631438215-75bc2640feb8.jpeg"
+  );
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  useEffect(() => {
+    const timeline = gsap.timeline({ defaults: { ease: "power2.out" } });
+
+    const startAnimations = () => {
+      if (imageRef.current) {
+        gsap.set(imageRef.current, { transformPerspective: 800, transformOrigin: "50% 50%" });
+
+        timeline.fromTo(
+          imageRef.current,
+          {
+            autoAlpha: 0,
+            scale: 1.08,
+            y: 30,
+            rotate: -2,
+            filter: "blur(12px) saturate(0.9) brightness(0.9)",
+          },
+          {
+            autoAlpha: 1,
+            scale: 1,
+            y: 0,
+            rotate: 0,
+            filter: "blur(0px) saturate(1) brightness(1.05)",
+            duration: 1.4,
+          }
+        );
+
+        timeline.to(
+          imageRef.current,
+          { filter: "brightness(1)", duration: 0.6, ease: "power1.out" },
+          "<"
+        );
+
+        gsap.to(imageRef.current, {
+          scale: 1.01,
+          duration: 6,
+          ease: "sine.inOut",
+          repeat: -1,
+          yoyo: true,
+        });
+      }
+
+      const textElements: (HTMLElement | null)[] = [
+        headingRef.current,
+        subheadingRef.current,
+        ctaRef.current,
+      ];
+
+      timeline.fromTo(
+        textElements,
+        { autoAlpha: 0, y: 24 },
+        { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.15 },
+        "<0.2"
+      );
+    };
+
+    const img = imageRef.current;
+    if (img) {
+      if (img.complete && img.naturalWidth > 0) {
+        startAnimations();
+      } else {
+        const onLoad = () => startAnimations();
+        img.addEventListener("load", onLoad, { once: true });
+      }
+    }
+
+    // Subtle mouse parallax on pointer-capable devices
+    const enableParallax = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(pointer: fine)").matches;
+    let onMove: ((e: MouseEvent) => void) | null = null;
+    if (enableParallax && imageRef.current) {
+      onMove = (e: MouseEvent) => {
+        const { innerWidth, innerHeight } = window;
+        const percentX = (e.clientX / innerWidth) - 0.5; // -0.5..0.5
+        const percentY = (e.clientY / innerHeight) - 0.5; // -0.5..0.5
+        const rotateY = percentX * 6; // left/right tilt
+        const rotateX = -percentY * 6; // up/down tilt
+        gsap.to(imageRef.current!, {
+          rotateX,
+          rotateY,
+          duration: 0.6,
+          ease: "sine.out",
+        });
+      };
+      window.addEventListener("mousemove", onMove);
+    }
+
+    return () => {
+      timeline.kill();
+      gsap.killTweensOf(imageRef.current);
+      if (onMove) window.removeEventListener("mousemove", onMove);
+    };
+  }, []);
+
+  return (
+    <main className="relative min-h-[100svh] w-full overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-white">
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-500/20 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-cyan-400/10 via-transparent to-transparent" />
+      </div>
+
+      <section className="relative min-h-[100svh]">
+        <img
+          ref={imageRef}
+          src={imageSrc}
+          alt="Butterfly"
+          loading="eager"
+          fetchPriority="high"
+          onError={() => {
+            // Fallback to the second local asset
+            if (imageSrc === "/photo-1587405254461-abd1d1c7440e.jpeg") {
+              setImageSrc("/photo-1599631438215-75bc2640feb8.jpeg");
+            }
+          }}
+          className="pointer-events-none select-none absolute inset-0 z-0 w-full h-full object-cover will-change-transform"
+        />
+
+        <div className="absolute inset-0 z-[1] bg-black/20" />
+        <div className="relative z-10 flex min-h-[100svh] items-center justify-center">
+          <div className="mx-auto max-w-3xl px-6 text-center">
+            <h1
+              ref={headingRef}
+              className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight"
+            >
+              Embrace the Elegance of Butterfly
+            </h1>
+            <p
+              ref={subheadingRef}
+              className="mt-4 text-base sm:text-lg md:text-xl text-white/85"
+            >
+              Discover beauty in motion
+            </p>
+            <motion.a
+              ref={ctaRef}
+              href="/products/butterfly"
+              whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(99,102,241,0.35)" }}
+              whileTap={{ scale: 0.98 }}
+              className="group inline-flex items-center gap-2 mt-8 px-6 py-3 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md text-white/90 hover:text-white transition-colors"
+            >
+              Explore Now
+              <span className="transition-transform group-hover:translate-x-0.5">→</span>
+            </motion.a>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </section>
+    </main>
   );
 }
