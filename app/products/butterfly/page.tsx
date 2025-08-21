@@ -1,11 +1,12 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { motion, AnimatePresence, easeOut } from "framer-motion";
 import { gsap } from "gsap";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: easeOut } },
 };
 
 const staggerContainer = {
@@ -82,11 +83,11 @@ export default function ButterflyProductPage() {
       >
         <ol className="flex items-center gap-2">
           <li>
-            <a href="/" className="hover:text-white transition-colors">Home</a>
+            <Link href="/" className="hover:text-white transition-colors">Home</Link>
           </li>
           <li className="text-white/40">/</li>
           <li>
-            <a href="/products/butterfly" className="text-white/90">Butterfly</a>
+            <Link href="/products/butterfly" className="text-white/90">Butterfly</Link>
           </li>
         </ol>
       </motion.nav>
@@ -99,7 +100,7 @@ export default function ButterflyProductPage() {
             className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-[0_20px_70px_rgba(0,0,0,0.35)] will-change-transform"
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            transition={{ duration: 0.8, ease: easeOut }}
           >
             <AnimatePresence mode="wait">
               <motion.img
@@ -110,7 +111,7 @@ export default function ButterflyProductPage() {
                 initial={{ opacity: 0, scale: 1.03 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.98 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
+                transition={{ duration: 0.6, ease: easeOut }}
                 draggable={false}
               />
             </AnimatePresence>
@@ -260,7 +261,7 @@ export default function ButterflyProductPage() {
             What people are saying
           </motion.h3>
           <motion.p variants={fadeUp} className="mt-1 text-sm text-white/75">
-            "It feels alive without being distracting. The motion is just… soothing."
+            &ldquo;It feels alive without being distracting. The motion is just… soothing.&rdquo;
           </motion.p>
           <motion.div variants={fadeUp} className="mt-4 flex items-center gap-3">
             <Stars />

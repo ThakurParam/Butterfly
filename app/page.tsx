@@ -121,7 +121,6 @@ export default function Home() {
           loading="eager"
           fetchPriority="high"
           onError={() => {
-            // Fallback to the second local asset
             if (imageSrc === "/photo-1587405254461-abd1d1c7440e.jpeg") {
               setImageSrc("/photo-1599631438215-75bc2640feb8.jpeg");
             }
@@ -146,7 +145,7 @@ export default function Home() {
             </p>
             <motion.a
               ref={ctaRef}
-              href="/products/butterfly"
+              href="/butterfly-journey"
               whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(99,102,241,0.35)" }}
               whileTap={{ scale: 0.98 }}
               className="group inline-flex items-center gap-2 mt-8 px-6 py-3 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md text-white/90 hover:text-white transition-colors"

@@ -8,6 +8,7 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navItems = [
     { href: "/", label: "Home" },
+    { href: "/butterfly-journey", label: "Butterfly Journey" },
     { href: "/products/butterfly", label: "Products" },
     { href: "/about", label: "About" },
     { href: "/contact", label: "Contact" },

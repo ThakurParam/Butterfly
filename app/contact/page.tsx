@@ -25,7 +25,7 @@ export default function Contact() {
       await new Promise((r) => setTimeout(r, 900));
       setStatus("success");
       setForm({ name: "", email: "", message: "" });
-    } catch (err) {
+    } catch {
       setStatus("error");
     }
   };
@@ -151,7 +151,7 @@ export default function Contact() {
                     animate={{ opacity: 1 }}
                     className="text-sm text-emerald-300"
                   >
-                    Message sent! We'll get back soon.
+                    Message sent! We&apos;ll get back soon.
                   </motion.span>
                 )}
                 {status === "error" && (
